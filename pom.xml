@@ -45,6 +45,12 @@
       <version>8.0.0.Final</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.6.0</version>
+    </dependency>
+
   </dependencies>
   <build>
     <finalName>SrpingCRUD</finalName>
