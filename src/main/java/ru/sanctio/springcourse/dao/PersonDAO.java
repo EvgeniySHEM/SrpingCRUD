@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PersonDAO {
@@ -31,14 +32,19 @@ public class PersonDAO {
                         .stream().findAny().orElse(null);
     }
 
+    public Optional<Person> show(String email) {
+        return jdbcTemplate.query("SELECT * FROM person WHERE email = ?", new Object[]{email},
+                new BeanPropertyRowMapper<>(Person.class)).stream().findAny();
+    }
+
     public void save(Person person) {
-        jdbcTemplate.update("INSERT INTO person VALUES (1,?,?,?)", person.getName(), person.getAge(),
-                person.getEmail());
+        jdbcTemplate.update("INSERT INTO person (name, age, email, address) VALUES (?,?,?,?)", person.getName(), person.getAge(),
+                person.getEmail(), person.getAddress());
     }
 
     public void update(Person person) {
-        jdbcTemplate.update("UPDATE person SET name = ?, age = ?, email = ? WHERE id = ?", person.getName(),
-                person.getAge(), person.getEmail(), person.getId());
+        jdbcTemplate.update("UPDATE person SET name = ?, age = ?, email = ?, address = ? WHERE id = ?", person.getName(),
+                person.getAge(), person.getEmail(), person.getAddress(), person.getId());
     }
 
     public void delete(int id) {
@@ -53,8 +59,8 @@ public class PersonDAO {
         List<Person> people = create1000People();
         long before = System.nanoTime();
         people.forEach(person -> {
-            jdbcTemplate.update("INSERT INTO person VALUES (?,?,?,?)", person.getId(),
-                    person.getName(), person.getAge(), person.getEmail());
+            jdbcTemplate.update("INSERT INTO person (name, age, email, address) VALUES (?,?,?,?)",
+                    person.getName(), person.getAge(), person.getEmail(), person.getAddress());
         });
         long after = System.nanoTime();
         System.out.println("Time Ordinary update: " + (after - before));
@@ -64,14 +70,14 @@ public class PersonDAO {
         List<Person> people = create1000People();
         long before = System.nanoTime();
 
-        jdbcTemplate.batchUpdate("INSERT INTO person VALUES (?,?,?,?)",
+        jdbcTemplate.batchUpdate("INSERT INTO person (name, age, email, address) VALUES (?,?,?,?)",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                        preparedStatement.setInt(1, people.get(i).getId());
-                        preparedStatement.setString(2, people.get(i).getName());
-                        preparedStatement.setInt(3, people.get(i).getAge());
-                        preparedStatement.setString(4, people.get(i).getEmail() );
+                        preparedStatement.setString(1, people.get(i).getName());
+                        preparedStatement.setInt(2, people.get(i).getAge());
+                        preparedStatement.setString(3, people.get(i).getEmail());
+                        preparedStatement.setString(4, people.get(i).getAddress());
                     }
 
                     @Override
@@ -87,7 +93,7 @@ public class PersonDAO {
     private List<Person> create1000People() {
         List<Person> people = new ArrayList<>(1000);
         for (int i = 0; i < 1000; i++) {
-            people.add(new Person(i, "Name"+i, 30, "name" + i + "@mail.ru"));
+            people.add(new Person( "Name"+i, 30, "name" + i + "@mail.ru", "Страна, Город, 187412"));
         }
         return people;
     }
