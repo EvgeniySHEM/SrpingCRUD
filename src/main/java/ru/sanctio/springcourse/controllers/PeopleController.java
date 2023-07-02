@@ -61,8 +61,6 @@ public class PeopleController {
     public String update(@ModelAttribute("person") @Valid Person person,
                          BindingResult bindingResult) {
 
-        personValidator.validate(person, bindingResult);
-
         if(bindingResult.hasErrors()) {
             return "people/edit";
         }
