@@ -9,20 +9,22 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.sanctio.springcourse.dao.PersonDAO;
 import ru.sanctio.springcourse.models.Person;
+import ru.sanctio.springcourse.services.PersonService;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final PersonDAO personDAO;
+    private final PersonService personService;
 
     @Autowired
-    public AdminController(PersonDAO personDAO) {
-        this.personDAO = personDAO;
+    public AdminController(PersonService personService) {
+        this.personService = personService;
+        ;
     }
 
     @GetMapping()
     public String adminPage(Model model, @ModelAttribute("person") Person person) {
-        model.addAttribute("people", personDAO.index());
+        model.addAttribute("people", personService.findAll());
 
         return "admin/adminPage";
     }

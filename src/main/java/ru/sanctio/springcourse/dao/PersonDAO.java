@@ -1,67 +1,32 @@
 package ru.sanctio.springcourse.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.sanctio.springcourse.models.Person;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
 public class PersonDAO {
 
-    private final SessionFactory sessionFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public PersonDAO(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<Person> index() {
-//        try(Session session = sessionFactory.getCurrentSession()) {
-//            return session.createSelectionQuery("FROM Person", Person.class).getResultList();
-//        }
-        Session session = sessionFactory.getCurrentSession();
-        return session.createSelectionQuery("FROM Person", Person.class).getResultList();
-    }
-
-    @Transactional(readOnly = true)
-    public Person show(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.find(Person.class, id);
+    public PersonDAO(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Transactional(readOnly = true)
     public Optional<Person> show(String email) {
-        Session session = sessionFactory.getCurrentSession();
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-        return session.createSelectionQuery("FROM Person p WHERE p.email =:email", Person.class)
-                .setParameter("email", email).stream().findAny();
+        return entityManager.createQuery("FROM Person p WHERE p.email =:email", Person.class)
+                .setParameter("email", email).getResultStream().findAny();
     }
 
-    @Transactional
-    public void save(Person person) {
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(person);
-    }
-
-    @Transactional
-    public void update(Person person) {
-        Session session = sessionFactory.getCurrentSession();
-        session.merge(person);
-    }
-
-    @Transactional
-    public void delete(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        Person person = session.find(Person.class,id);
-        session.remove(person);
-    }
 
 //    /**
 //     * Тестирование производительности пакетной вставки
