@@ -2,6 +2,10 @@ package ru.sanctio.springcourse.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "person")
@@ -30,6 +34,15 @@ public class Person {
     @Column(name = "address")
     @Pattern(regexp = "[A-Z]\\w+, [A-Z]\\w+, \\d{6}", message = "Your address should be in this format : Country, City, Postal code ( 6 digits )")
     private String address;
+
+    @Column(name = "date_of_birth")
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "dd/MM/yyyy") // будет ожидать данных в таком формате, чтобы мапить их в БД
+    private LocalDate dateOfBirth;
+
+    @Column(name = "created_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
     public Person() {
     }
@@ -85,12 +98,32 @@ public class Person {
         this.address = address;
     }
 
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", age=" + age +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }

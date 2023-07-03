@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.sanctio.springcourse.models.Person;
 import ru.sanctio.springcourse.repositories.PersonRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class PersonService {
 
     @Transactional
     public void save(Person person) {
+        person.setCreatedAt(new Date());
         personRepository.save(person);
     }
 

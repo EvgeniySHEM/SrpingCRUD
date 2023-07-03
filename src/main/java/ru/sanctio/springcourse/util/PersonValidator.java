@@ -26,10 +26,16 @@ public class PersonValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Person person = (Person) target;
+        System.out.println(person);
 
         //посмотреть есть ли человек с таким же email в БД
         if(personService.findByEmail(person.getEmail()).isPresent()) {
             errors.rejectValue("email", "", "This email is already taken");
+        }
+
+        if(person.getDateOfBirth() != null &&
+                !person.getDateOfBirth().toString().matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            errors.rejectValue("dateOfBirth", "", "This date is not valid");
         }
 
     }
