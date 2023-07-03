@@ -1,6 +1,5 @@
 package ru.sanctio.springcourse.services;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,4 +43,11 @@ public class PersonService {
         personRepository.deleteById(id);
     }
 
+    public Optional<Person> findByEmail(String email) {
+        return personRepository.findByEmail(email);
+    }
+
+    public void test() {
+        System.out.println("Testing here with debug. Inside Hibernate Transaction");
+    }
 }

@@ -24,6 +24,9 @@ public class PeopleController {
     @GetMapping
     public String index(Model model) {
         model.addAttribute("people", personService.findAll());
+
+        personService.test();
+
         return "people/index";
     }
 
