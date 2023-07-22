@@ -5,7 +5,10 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "person")
@@ -46,6 +49,10 @@ public class Person {
 
     @Enumerated //по умолчанию используется EnumTYPE.ORDINAL (индексирует все значения)
     private Mood mood;
+
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.PERSIST)
+//    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE) для того, чтобы каскадирование работало и для метода save
+    private List<Item> items;
 
     public Person() {
     }
@@ -123,6 +130,36 @@ public class Person {
 
     public void setMood(Mood mood) {
         this.mood = mood;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public void addItem(Item item) {
+        if(this.items == null) {
+            this.items = new ArrayList<>();
+        }
+        //связь с двух сторон
+        this.items.add(item);
+        item.setOwner(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return id == person.id && age == person.age && Objects.equals(name, person.name) && Objects.equals(email, person.email) && Objects.equals(address, person.address) && Objects.equals(dateOfBirth, person.dateOfBirth) && Objects.equals(createdAt, person.createdAt) && mood == person.mood && Objects.equals(items, person.items);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, age, email, address, dateOfBirth, createdAt, mood, items);
     }
 
     @Override

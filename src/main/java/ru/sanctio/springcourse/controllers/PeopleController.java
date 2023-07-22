@@ -5,7 +5,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.sanctio.springcourse.dao.PersonDAO;
 import ru.sanctio.springcourse.models.Person;
+import ru.sanctio.springcourse.services.ItemServise;
 import ru.sanctio.springcourse.services.PersonService;
 import ru.sanctio.springcourse.util.PersonValidator;
 
@@ -15,17 +17,24 @@ public class PeopleController {
 
     private final PersonService personService;
     private final PersonValidator personValidator;
+    private final PersonDAO personDAO;
+    private final ItemServise itemServise;
 
-    public PeopleController(PersonService personService, PersonValidator personValidator) {
+    public PeopleController(PersonService personService, PersonValidator personValidator, PersonDAO personDAO, ItemServise itemServise) {
         this.personService = personService;
         this.personValidator = personValidator;
+        this.personDAO = personDAO;
+        this.itemServise = itemServise;
     }
 
     @GetMapping
     public String index(Model model) {
         model.addAttribute("people", personService.findAll());
 
+        itemServise.findByItemName("Airpods");
+        itemServise.findByOwner(personService.findAll().get(0));
         personService.test();
+//        personDAO.testNPlus1();
 
         return "people/index";
     }
@@ -44,7 +53,6 @@ public class PeopleController {
     @PostMapping()
     public String create(@ModelAttribute("person") @Valid Person person,
                          BindingResult bindingResult) {
-        System.out.println(person + "create");
 
         personValidator.validate(person, bindingResult);
 
